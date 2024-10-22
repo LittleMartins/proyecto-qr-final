@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
@@ -12,15 +12,16 @@ import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx'; // Importa e
   declarations: [AppComponent],
   imports: [
     BrowserModule,
-    ZXingScannerModule, // Asegúrate de que esto esté aquí
+    ZXingScannerModule,
     IonicModule.forRoot(),
     AppRoutingModule,
     HttpClientModule,
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    BarcodeScanner, // Añade BarcodeScanner aquí
+    BarcodeScanner,
   ],
   bootstrap: [AppComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA] // Agregar esquema aquí
 })
 export class AppModule {}

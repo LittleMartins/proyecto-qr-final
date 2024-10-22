@@ -1,8 +1,8 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>docente-qr</ion-title>
+    <ion-title>Generar Qr</ion-title>
     <ion-buttons slot="end">
-      <ion-back-button defaultHref="/login"></ion-back-button>
+      <ion-back-button defaultHref=""></ion-back-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -10,7 +10,7 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">docente-qr</ion-title>
+      <ion-title size="large">Generar Qr</ion-title>
     </ion-toolbar>
   </ion-header>
 
@@ -27,8 +27,6 @@
       <img [src]="qrCodeDataUrl" />
       <p>Tiempo restante: {{ countdown }} segundos</p>
     </ion-card>
-
-
 
     <!-- Código escaneado -->
     <div *ngIf="scannedCode">

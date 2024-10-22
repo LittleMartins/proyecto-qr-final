@@ -1,7 +1,6 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/">Volver</ion-back-button>
     </ion-buttons>
     <ion-title>
       Inicio
@@ -24,7 +23,7 @@
       <ion-button expand="full" routerLink="/mi-perfil" class="custom-button">Mi Perfil</ion-button>
       <ion-button expand="full" routerLink="/asignaturas" class="custom-button">Asignaturas</ion-button>
       <ion-button expand="full" routerLink="/marcar-asistencia" class="custom-button">Marcar Asistencia</ion-button>
-      <ion-button expand="full" routerLink="/mi-api" class="custom-button">Prueba 404 notfound</ion-button>
+      <ion-button expand="full" (click)="logout()" class="custom-button">Cerrar Sesión</ion-button> <!-- Botón de cerrar sesión -->
     </div>
   </div>
 </ion-content>

@@ -1,5 +1,5 @@
 .content-background {
-  background-color: #f4f4f9; // Color de fondo suave
+  background-color: #f4f4f9; /* Color de fondo suave */
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -9,48 +9,64 @@
 }
 
 .welcome-message {
-  background-color: #ffffff; // Fondo blanco para el mensaje
+  background-color: #ffffff; /* Fondo blanco para el mensaje */
   border-radius: 10px;
   padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); /* Sombra más pronunciada */
   text-align: center;
   margin-bottom: 20px;
-  width: 100%; // Asegura que el contenedor ocupe el ancho completo
-  max-width: 400px; // Establece un ancho máximo para pantallas grandes
+  width: 100%; /* Asegura que el contenedor ocupe el ancho completo */
+  max-width: 450px; /* Establece un ancho máximo para pantallas grandes */
 }
 
 h2 {
-  color: #333333; // Color del texto
+  color: #333333; /* Color del texto */
   font-family: 'Roboto', sans-serif;
+  font-size: 24px; /* Aumenta el tamaño de la fuente */
+  margin-bottom: 10px; /* Espacio inferior */
 }
 
 p {
-  color: #666666; // Color del texto secundario
-  font-size: 14px;
+  color: #666666; /* Color del texto secundario */
+  font-size: 16px; /* Aumenta el tamaño de la fuente */
 }
 
 .button-container {
   display: flex;
   flex-direction: column;
-  gap: 15px; // Espacio entre los botones
-  width: 100%; // Asegura que el contenedor ocupe el ancho completo
-  max-width: 400px; // Establece un ancho máximo para pantallas grandes
+  gap: 15px; /* Espacio entre los botones */
+  width: 100%; /* Asegura que el contenedor ocupe el ancho completo */
+  max-width: 450px; /* Establece un ancho máximo para pantallas grandes */
 }
 
-.scan-button {
-  background-color: #3880ff; // Color del botón escanear
+.toggle-camera-button {
+  background-color: #007bff; /* Color del botón para activar/desactivar cámara */
   color: white;
+  font-weight: bold; /* Fuente en negrita */
 }
 
 .mark-attendance-button {
-  background-color: #10dc60; // Color del botón marcar asistencia
+  background-color: #28a745; /* Color del botón marcar asistencia */
   color: white;
+  font-weight: bold; /* Fuente en negrita */
+}
+
+.mark-attendance-prueba-button {
+  background-color: #ffc107; /* Color del botón de prueba */
+  color: white;
+  font-weight: bold; /* Fuente en negrita */
+}
+
+.scanner-container {
+  margin-bottom: 15px; /* Espacio inferior para el escáner */
 }
 
 .footer {
-  margin-top: auto; // Mueve el pie de página al final
+  margin-top: auto; /* Mueve el pie de página al final */
   text-align: center;
   padding: 10px;
-  color: #999999; // Color del texto del pie de página
+  color: #999999; /* Color del texto del pie de página */
   font-size: 12px;
+  background-color: #ffffff; /* Fondo blanco para el pie de página */
+  border-top: 1px solid #e0e0e0; /* Línea superior del pie de página */
 }

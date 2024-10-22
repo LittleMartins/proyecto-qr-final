@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ToastController, LoadingController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { StorageService } from '../../services/storage.service'; // Ruta corregida
+import { StorageService } from '../../services/database.service'; // Ruta corregida
 
 @Component({
   selector: 'app-mi-perfil',

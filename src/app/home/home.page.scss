@@ -60,3 +60,16 @@ page-home {
     margin-right: 10px; /* Espacio entre el logo y el título */
   }
 }
+// styles.scss
+.fade-out {
+  animation: fadeOut 0.5s forwards;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

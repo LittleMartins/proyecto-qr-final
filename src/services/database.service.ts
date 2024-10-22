@@ -1,125 +1,87 @@
-// database.service.ts
 import { Injectable } from '@angular/core';
-import { Capacitor } from '@capacitor/core';
-import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
-export class DatabaseService {
-  private dbName: string = 'my_database'; // Nombre de la base de datos
-  private sqliteConnection: SQLiteConnection; // Conexión a SQLite
+export class StorageService {
+  constructor() { }
 
-  constructor() {
-    this.sqliteConnection = new SQLiteConnection(CapacitorSQLite); // Inicializa la conexión
+  // Crear o guardar un objeto en el localStorage
+  createObject(key: string, data: any): void {
+    const jsonData = JSON.stringify(data);
+    localStorage.setItem(key, jsonData);
+    console.log('Objeto guardado en la Base de datos');
   }
 
-  // Inicializa la base de datos y crea tablas
-  async initializeDatabase() {
-    try {
-      if (Capacitor.getPlatform() !== 'web') {
-        const db: SQLiteDBConnection = await this.sqliteConnection.createConnection(
-          this.dbName,
-          false,            // No encriptado
-          'no-encryption',  // Tipo de encriptación
-          1,                // Versión de la base de datos
-          false             // readonly: false (la base de datos no es de solo lectura)
-        );
+  // Obtener un objeto del localStorage por su clave
+  getObjectById(key: string): any {
+    const jsonData = localStorage.getItem(key);
+    if (jsonData) {
+      return JSON.parse(jsonData);
+    }
+    console.error('Objeto no encontrado');
+    return null;
+  }
 
-        await db.open(); // Abre la conexión a la base de datos
+  // Actualizar un objeto en el localStorage
+  updateObject(key: string, updatedData: any): void {
+    const jsonData = JSON.stringify(updatedData);
+    localStorage.setItem(key, jsonData);
+    console.log('Objeto actualizado en la Base de datos');
+  }
 
-        // Crea las tablas necesarias
-        await this.createTables(db);
-
-        console.log('Base de datos inicializada correctamente');
-      } else {
-        console.log('Las conexiones de base de datos no son compatibles en la web.');
-      }
-    } catch (error) {
-      console.error('Error al inicializar la base de datos:', error);
-      throw error;
+  // Cambiar una imagen almacenada dentro de un objeto
+  changeImage(key: string, newImage: string): void {
+    const currentData = this.getObjectById(key);
+    if (currentData) {
+      currentData.image = newImage; 
+      this.updateObject(key, currentData);
+      console.log('Imagen actualizada en Base de datos');
+    } else {
+      console.error('No se pudo actualizar la imagen: objeto no encontrado');
     }
   }
 
-  // Crea las tablas necesarias en la base de datos
-  private async createTables(db: SQLiteDBConnection) {
-    const createTableQuery = `CREATE TABLE IF NOT EXISTS example_table (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL
-    );`;
+  // Eliminar un objeto del localStorage
+  deleteObject(key: string): void {
+    localStorage.removeItem(key);
+    console.log('Objeto eliminado de Base de datos');
+  }
 
-    try {
-      await db.execute(createTableQuery);
-      console.log('Tabla creada o ya existe.');
-    } catch (error) {
-      console.error('Error al crear la tabla:', error);
+  // Añadir un nuevo usuario al localStorage
+  addUser(username: string, password: string): void {
+    let users = this.getObjectById('users') || [];
+    const newUser = { username, password };
+    users.push(newUser);
+    this.createObject('users', users);
+    console.log('Usuario añadido a la Base de datos');
+  }
+
+  // Obtener un usuario por su nombre de usuario
+  getUser(username: string): any {
+    const users = this.getObjectById('users') || [];
+    return users.find((user: any) => user.username === username);
+  }
+
+  // Actualizar la contraseña de un usuario
+  updateUserPassword(username: string, newPassword: string): void {
+    let users = this.getObjectById('users') || [];
+    const userIndex = users.findIndex((user: any) => user.username === username);
+
+    if (userIndex !== -1) {
+      users[userIndex].password = newPassword;
+      this.updateObject('users', users);
+      console.log('Contraseña de usuario actualizada');
+    } else {
+      console.error('Usuario no encontrado');
     }
   }
 
-  // Inserta datos en la tabla example_table
-  async insertData(name: string): Promise<void> {
-    const db: SQLiteDBConnection = await this.sqliteConnection.createConnection(this.dbName, false, 'no-encryption', 1, false);
-    await db.open();
-
-    const insertQuery = `INSERT INTO example_table (name) VALUES (?);`;
-    try {
-      await db.run(insertQuery, [name]); // Cambia `execute` a `run`
-      console.log('Dato insertado correctamente en la base de datos.');
-    } catch (error) {
-      console.error('Error al insertar dato:', error);
-    } finally {
-      await db.close(); // Cierra la conexión después de la inserción
-    }
-  }
-
-  // Método para obtener todos los datos de la tabla example_table
-  async getAllData(): Promise<any[]> {
-    const db: SQLiteDBConnection = await this.sqliteConnection.createConnection(this.dbName, false, 'no-encryption', 1, false);
-    await db.open();
-
-    const selectQuery = `SELECT * FROM example_table;`;
-    let result: any[] = [];
-    try {
-      const res = await db.query(selectQuery);
-      result = res.values || []; // Asegúrate de que result sea un array
-      console.log('Datos obtenidos correctamente:', result);
-    } catch (error) {
-      console.error('Error al obtener datos:', error);
-    } finally {
-      await db.close(); // Cierra la conexión después de la consulta
-    }
-    return result;
-  }
-
-  // Método para eliminar un dato por su ID
-  async deleteData(id: number): Promise<void> {
-    const db: SQLiteDBConnection = await this.sqliteConnection.createConnection(this.dbName, false, 'no-encryption', 1, false);
-    await db.open();
-
-    const deleteQuery = `DELETE FROM example_table WHERE id = ?;`;
-    try {
-      await db.run(deleteQuery, [id]); // Cambia `execute` a `run`
-      console.log(`Dato con ID ${id} eliminado correctamente.`);
-    } catch (error) {
-      console.error('Error al eliminar dato:', error);
-    } finally {
-      await db.close(); // Cierra la conexión después de la eliminación
-    }
-  }
-
-  // Método para actualizar un dato por su ID
-  async updateData(id: number, name: string): Promise<void> {
-    const db: SQLiteDBConnection = await this.sqliteConnection.createConnection(this.dbName, false, 'no-encryption', 1, false);
-    await db.open();
-
-    const updateQuery = `UPDATE example_table SET name = ? WHERE id = ?;`;
-    try {
-      await db.run(updateQuery, [name, id]); // Cambia `execute` a `run`
-      console.log(`Dato con ID ${id} actualizado correctamente.`);
-    } catch (error) {
-      console.error('Error al actualizar dato:', error);
-    } finally {
-      await db.close(); // Cierra la conexión después de la actualización
-    }
+  // Eliminar un usuario por su nombre de usuario
+  deleteUser(username: string): void {
+    let users = this.getObjectById('users') || [];
+    users = users.filter((user: any) => user.username !== username);
+    this.createObject('users', users);
+    console.log('Usuario eliminado de la Base de datos');
   }
 }

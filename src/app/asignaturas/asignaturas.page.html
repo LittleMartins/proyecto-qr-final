@@ -1,9 +1,9 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home"></ion-back-button>
+      <ion-back-button defaultHref=""></ion-back-button>
     </ion-buttons>
-    <ion-title>Asignaturas</ion-title>
+    <ion-title>Registrar Asistencia</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -17,12 +17,22 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-list>
+  <ion-list *ngIf="!noAsistencias; else noAsistenciasTemplate">
     <ion-item *ngFor="let asignatura of asignaturas">
       <ion-label>
         <h2>{{ asignatura.nombre }}</h2>
-        <p>Asistencia: {{ asignatura.asistencia }}/{{ asignatura.totalClases }} ({{ calcularPorcentaje(asignatura.asistencia, asignatura.totalClases) }}%)</p>
+        <p>Asistencia: {{ asignatura.asistencia }}/{{ asignatura.totalClases }}</p>
+        <p *ngIf="asignatura.totalClases > 0">Porcentaje de Asistencia: {{ calcularPorcentaje(asignatura.asistencia, asignatura.totalClases) }}%</p>
+        <p *ngIf="asignatura.totalClases === 0">Porcentaje de Asistencia: 0%</p>
       </ion-label>
     </ion-item>
   </ion-list>
+
+  <ng-template #noAsistenciasTemplate>
+    <ion-item>
+      <ion-label>
+        <h2>No se han encontrado asistencias</h2>
+      </ion-label>
+    </ion-item>
+  </ng-template>
 </ion-content>

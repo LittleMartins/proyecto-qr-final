@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { StorageService } from '../../services/storage.service';
+import { StorageService } from '../../services/database.service';
 import { ToastController, LoadingController } from '@ionic/angular';
-import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx'; // Asegúrate de tener esta importación
 
 @Component({
   selector: 'app-marcar-asistencia',
@@ -16,20 +15,20 @@ export class MarcarAsistenciaPage implements OnInit {
   correoUsuario: string = 'martin.almonacid@duocuc.cl';
   hasDevices: boolean = false;
   hasPermission: boolean = false;
+  availableDevices: MediaDeviceInfo[] = [];
+  selectedDevice: MediaDeviceInfo | undefined = undefined; 
+  isCameraActive: boolean = false; // Nuevo estado para la cámara
 
   constructor(
     private storageService: StorageService,
     private toastController: ToastController,
-    private loadingController: LoadingController,
-    private barcodeScanner: BarcodeScanner // Inyecta el servicio BarcodeScanner
+    private loadingController: LoadingController
   ) {}
 
   ngOnInit() {
     this.fecha = this.obtenerFechaActual();
     this.horaActual = this.obtenerHoraActual();
-    this.checkDeviceAndPermission(); // Verificar dispositivos y permisos
-
-    // Actualiza la hora cada segundo
+    this.checkDeviceAndPermission();
     setInterval(() => {
       this.horaActual = this.obtenerHoraActual();
     }, 1000);
@@ -45,7 +44,7 @@ export class MarcarAsistenciaPage implements OnInit {
 
   obtenerHoraActual(): string {
     const ahora = new Date();
-    return ahora.toLocaleTimeString(); // Retorna la hora en formato local
+    return ahora.toLocaleTimeString();
   }
 
   async checkDeviceAndPermission() {
@@ -53,14 +52,9 @@ export class MarcarAsistenciaPage implements OnInit {
     this.hasPermission = true; // Cambia esto según tu lógica de permisos
   }
 
-  async scan() {
-    try {
-      const result = await this.barcodeScanner.scan();
-      this.handleScanSuccess(result.text); // Asegúrate de que `result.text` sea el valor que deseas
-    } catch (error) {
-      console.error('Error de escaneo:', error);
-      await this.presentToast('Error al escanear el código. Por favor, intenta de nuevo.');
-    }
+  handleScanSuccess(result: string) {
+    this.asignatura = result; 
+    this.presentToast(`Código escaneado: ${result}`);
   }
 
   async marcarAsistencia() {
@@ -70,18 +64,38 @@ export class MarcarAsistenciaPage implements OnInit {
     }
 
     const asistenciaData = this.crearAsistenciaData();
-
-    const loading = await this.loadingController.create({
-      message: 'Marcando asistencia...',
-    });
+    const loading = await this.loadingController.create({ message: 'Marcando asistencia...' });
     await loading.present();
 
     try {
       await this.storageService.createObject(`asistencia-${Date.now()}`, asistenciaData);
+      this.actualizarAsistenciasEnLocalStorage(asistenciaData);
       await this.presentToast(`Asistencia marcada para ${this.asignatura} en la fecha: ${this.fecha}`);
+      this.resetEstado();
     } catch (error) {
       console.error('Error al guardar la asistencia:', error);
       await this.presentToast('Hubo un error al marcar la asistencia. Por favor, inténtalo de nuevo.');
+    } finally {
+      loading.dismiss();
+    }
+  }
+
+  async marcarAsistenciaPrueba() {
+    const asignaturaPrueba = 'PROGRAMACION DE APLICACIONES MOVILES_003D';
+    this.asignatura = asignaturaPrueba;
+
+    const asistenciaData = this.crearAsistenciaData();
+    const loading = await this.loadingController.create({ message: 'Marcando asistencia de prueba...' });
+    await loading.present();
+
+    try {
+      await this.storageService.createObject(`asistencia-${Date.now()}`, asistenciaData);
+      this.actualizarAsistenciasEnLocalStorage(asistenciaData);
+      await this.presentToast(`Asistencia marcada para ${asignaturaPrueba} en la fecha: ${this.fecha}`);
+      this.resetEstado();
+    } catch (error) {
+      console.error('Error al guardar la asistencia:', error);
+      await this.presentToast('Hubo un error al marcar la asistencia de prueba. Por favor, inténtalo de nuevo.');
     } finally {
       loading.dismiss();
     }
@@ -100,9 +114,27 @@ export class MarcarAsistenciaPage implements OnInit {
     };
   }
 
-  handleScanSuccess(result: string) {
-    this.asignatura = result; // Guarda el código escaneado
-    this.presentToast(`Código escaneado: ${result}`);
+  actualizarAsistenciasEnLocalStorage(asistenciaData: any) {
+    const storedAsistencias = localStorage.getItem('asistencias');
+    let asistencias = storedAsistencias ? JSON.parse(storedAsistencias) : [];
+
+    const asignaturaExistente = asistencias.find((a: any) => a.nombre === asistenciaData.asignatura);
+    if (asignaturaExistente) {
+      asignaturaExistente.asistencia += 1;
+      asignaturaExistente.totalClases += 1;
+    } else {
+      asistencias.push({
+        nombre: asistenciaData.asignatura,
+        asistencia: 1,
+        totalClases: 1,
+      });
+    }
+
+    localStorage.setItem('asistencias', JSON.stringify(asistencias));
+  }
+
+  resetEstado() {
+    this.asignatura = null;
   }
 
   async presentToast(message: string) {
@@ -112,5 +144,13 @@ export class MarcarAsistenciaPage implements OnInit {
       position: 'top',
     });
     toast.present();
+  }
+
+  // Nuevo método para activar/desactivar la cámara
+  toggleCamera() {
+    this.isCameraActive = !this.isCameraActive;
+    if (this.isCameraActive) {
+      this.checkDeviceAndPermission(); // Verificar dispositivos y permisos
+    }
   }
 }

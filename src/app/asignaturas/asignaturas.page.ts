@@ -6,17 +6,29 @@ import { Component } from '@angular/core';
   styleUrls: ['asignaturas.page.scss'],
 })
 export class AsignaturasPage {
-  asignaturas = [
-    { nombre: 'ESTADISTICA DESCRIPTIVA_005D', asistencia: 1, totalClases: 1 },
-    { nombre: 'INGLES INTERMEDIO_018D', asistencia: 2, totalClases: 2 },
-    { nombre: 'PROGRAMACION DE APLICACIONES MOVILES_003D', asistencia: 1, totalClases: 2 },
-    { nombre: 'ARQUITECTURA_002D', asistencia: 1, totalClases: 1 },
-    { nombre: 'CALIDAD DE SOFTWARE_002D', asistencia: 1, totalClases: 1 },
-    { nombre: 'ETICA PARA EL TRABAJO_006D', asistencia: 2, totalClases: 2 },
-    { nombre: 'PROCESO DE PORTAFOLIO 4_004D', asistencia: 1, totalClases: 2 },
-  ];
+  asignaturas: any[] = [];
+  noAsistencias: boolean = true;
 
-  constructor() {}
+  constructor() {
+    this.loadAsistencias();
+  }
+
+  loadAsistencias() {
+    const storedAsistencias = localStorage.getItem('asistencias');
+    if (storedAsistencias) {
+      this.asignaturas = JSON.parse(storedAsistencias);
+      this.noAsistencias = this.asignaturas.every(asignatura => asignatura.asistencia === 0);
+
+      // Calcular porcentaje de asistencia
+      this.asignaturas.forEach(asignatura => {
+        const totalClases = asignatura.totalClases || 0; // Asegurarse de que existe totalClases
+        const asistencia = asignatura.asistencia || 0; // Asegurarse de que existe asistencia
+        asignatura.porcentaje = totalClases > 0 ? (asistencia / totalClases) * 100 : 0; // Calculo del porcentaje
+      });
+    } else {
+      this.noAsistencias = true; // No hay asistencias
+    }
+  }
 
   calcularPorcentaje(asistencia: number, totalClases: number): number {
     return totalClases > 0 ? Math.round((asistencia / totalClases) * 100) : 0;

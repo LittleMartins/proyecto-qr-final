@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home-docente"></ion-back-button> <!-- Cambia "/home-docente" por la ruta a la que quieras regresar -->
+      <ion-back-button defaultHref="/home-docente"></ion-back-button>
     </ion-buttons>
     <ion-title>Registrar Asistencia</ion-title>
   </ion-toolbar>
@@ -22,6 +22,11 @@
     <ion-input [(ngModel)]="fecha" placeholder="Ingrese la fecha"></ion-input>
   </ion-item>
 
+  <ion-item *ngIf="asignaturaSeleccionada">
+    <ion-label>Hora (HH:MM):</ion-label>
+    <ion-input [(ngModel)]="hora" placeholder="Ingrese la hora" readonly></ion-input> <!-- La hora se muestra automáticamente -->
+  </ion-item>
+
   <ion-list *ngIf="asignaturaSeleccionada">
     <ion-item *ngFor="let alumno of alumnos">
       <ion-label>{{ alumno.nombre }}</ion-label>
@@ -35,7 +40,7 @@
   </ion-list>
 
   <ion-button expand="full" (click)="registrarAsistencia()">Registrar Asistencia</ion-button>
-  <ion-button expand="full" (click)="cargarAsistencia(asignaturaSeleccionada?.nombre)">Cargar Asistencia</ion-button>
+  <ion-button expand="full" (click)="cargarHistorialAsistencias()">Ver historial de asistencias</ion-button>
 
   <ion-header *ngIf="asistencias.length > 0">
     <ion-toolbar>
@@ -46,7 +51,7 @@
   <ion-list *ngIf="asistencias.length > 0">
     <ion-item *ngFor="let asistencia of asistencias">
       <ion-label>
-        {{ asistencia.fecha }} - {{ asistencia.asignatura }} (ID: {{ asistencia.id }})
+        {{ asistencia.fecha }} - {{ asistencia.hora }} - {{ asistencia.asignatura }} (ID: {{ asistencia.id }}) <!-- Mostrar la hora aquí -->
         <ion-list>
           <ion-item *ngFor="let alumno of asistencia.alumnos">
             <ion-label>{{ alumno.nombre }}: {{ alumno.estado }}</ion-label>

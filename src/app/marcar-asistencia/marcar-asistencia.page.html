@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home"></ion-back-button>
+      <ion-back-button defaultHref=""></ion-back-button>
     </ion-buttons>
     <ion-title>Marcar Asistencia</ion-title>
   </ion-toolbar>
@@ -16,12 +16,25 @@
   </div>
 
   <div class="button-container">
-    <ion-button expand="full" (click)="scan()" class="scan-button">
-      Escanear Asignatura
+    <ion-button expand="full" (click)="toggleCamera()" class="toggle-camera-button">
+      {{ isCameraActive ? 'Desactivar Cámara' : 'Activar Cámara' }}
     </ion-button>
+
+    <div *ngIf="isCameraActive && hasDevices" class="scanner-container">
+      <zxing-scanner
+        [devices]="availableDevices"
+        [device]="selectedDevice"
+        [start]="isCameraActive"
+        (scanSuccess)="handleScanSuccess($event)"
+      ></zxing-scanner>
+    </div>
 
     <ion-button expand="full" (click)="marcarAsistencia()" class="mark-attendance-button">
       Marcar Asistencia
+    </ion-button>
+
+    <ion-button expand="full" (click)="marcarAsistenciaPrueba()" class="mark-attendance-prueba-button">
+      Marcar Asistencia de Prueba
     </ion-button>
   </div>
 
