@@ -6,14 +6,12 @@ import { Injectable } from '@angular/core';
 export class StorageService {
   constructor() { }
 
-  // Crear o guardar un objeto en el localStorage
   createObject(key: string, data: any): void {
     const jsonData = JSON.stringify(data);
     localStorage.setItem(key, jsonData);
     console.log('Objeto guardado en la Base de datos');
   }
 
-  // Obtener un objeto del localStorage por su clave
   getObjectById(key: string): any {
     const jsonData = localStorage.getItem(key);
     if (jsonData) {
